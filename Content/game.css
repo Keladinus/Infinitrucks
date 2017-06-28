@@ -1,0 +1,49 @@
+
+#wrap{
+	width:100vh;
+	margin: 0 auto;
+	position: relative;
+}
+
+#game
+{
+	z-index:0;
+	position: absolute;
+	background-color: darkgrey;	
+	height:100vh;
+	width:100%;
+	border: 6px solid #000000;
+}
+
+#uiFrame{
+	z-index:1;
+	position: absolute;
+	height:100vh;
+	width:100%;
+	background-image:url(../Assets/images/frame.png);
+	background-size: 100% 100%;
+	border: 6px solid #000000;	
+}
+/*
+
+#hud{
+	border: 1px solid red;
+}
+
+
+html,head,body
+{	
+	padding:0;
+	margin:0;
+}
+*/
+
+body 
+{
+	margin: 0;
+	overflow:hidden;
+	/*
+    background-color: #829939;
+	*/
+	background-color: #3A86C7;
+}

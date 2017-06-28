@@ -1,0 +1,23 @@
+{
+  "name": "InfiniTrucks",
+  "homepage": "https://github.com/Keladinus/Infinitrucks",
+  "authors": [
+    "Nate Grundy <gunslinger__1919@hotmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "EaselJS": "^0.8.2",
+    "TweenJS": "^0.6.2",
+    "SoundJS": "^0.6.2",
+    "PreloadJS": "^0.6.2"
+  }
+}
