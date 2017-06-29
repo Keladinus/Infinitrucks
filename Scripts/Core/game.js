@@ -9,7 +9,7 @@ var turnSpeed = 3;
 //var log = document.getElementById("log");
 var score = 0;
 var player;
-var SIZE = 150;
+var SIZE = 200;  //original 150
 var trucks = [];
 var pickups = [];
 var leftPressed = false;
@@ -456,7 +456,7 @@ function laneIsOpen(lane) //Ensures that trucks don't spawn on top of each other
 {
 	if(trucks[lane] == null || trucks[lane][0] == null)	//An empty lane is an open lane.
 		return true;
-	else if(trucks[lane][trucks[lane].length -1].y > 150)
+	else if(trucks[lane][trucks[lane].length -1].y > 105)
 		return true;
 	
 	return false;
