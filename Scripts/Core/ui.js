@@ -52,10 +52,10 @@ sprites.push(outerScore);
 
 //Score innter meter
 var innerScore = Object.create(spriteObject);
-innerScore.sourceY = 170;
+innerScore.sourceY = 171;
 innerScore.x = outerScore.x;
-innerScore.width = 100;
-innerScore.sourceWidth = 100;
+innerScore.width = 50;
+innerScore.sourceWidth = 50;
 sprites.push(innerScore);
 
 //Load the image
