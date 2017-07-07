@@ -54,6 +54,8 @@ sprites.push(outerScore);
 var innerScore = Object.create(spriteObject);
 innerScore.sourceY = 170;
 innerScore.x = outerScore.x;
+innerScore.width = 100;
+innerScore.sourceWidth = 100;
 sprites.push(innerScore);
 
 //Load the image
@@ -74,8 +76,8 @@ innerMeter.width--;
 innerMeter.sourceWidth--;
 
 if car and pickup collision
-innerScore.width--;
-innerScore.sourceWidth--;
+innerScore.width++;
+innerScore.sourceWidth++;
 */
 
 if(function collisionCheck(player, trucks){}){
