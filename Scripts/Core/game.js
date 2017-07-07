@@ -1,6 +1,8 @@
 var stage = new createjs.Stage("game");
-var truckSrcs = ["Assets/images/ch_truck01.png","Assets/images/ch_truck02.png",
-				"Assets/images/ch_truck03.png","Assets/images/ch_truck04.png"];
+var truckSrcs = ["Assets/images/ch_truck01.png","Assets/images/ch_truck02.png","Assets/images/ch_truck03.png","Assets/images/ch_truck04.png",
+				"Assets/images/ch_truck05.png","Assets/images/ch_truck06.png","Assets/images/ch_truck07.png","Assets/images/ch_truck08.png",
+				"Assets/images/ch_truck09.png","Assets/images/ch_truck10.png","Assets/images/ch_truck11.png","Assets/images/ch_truck12.png",
+				"Assets/images/ch_truck13.png","Assets/images/ch_truck14.png","Assets/images/ch_truck15.png"];
 var isRunning = true;
 var background = [];
 var backgroundSpeed = 16;
@@ -90,7 +92,7 @@ function isAlive()
 
 function buildArray() //turns the 1D array for trucks into a 2D array.
 {
-	for(var i = 0; i < 4; i++)
+	for(var i = 0; i < 15; i++)
 	{
 		trucks[i] = [];
 	}
@@ -121,7 +123,7 @@ function trySpawnTrucks()
 	{
 		var spawned = false;
 		//We loop through the lanes
-		for(var lane = 0; lane < 4; lane++)
+		for(var lane = 0; lane < 5; lane++)
 		{
 			if(laneIsOpen(lane) && !spawned)	
 			{
@@ -284,7 +286,7 @@ function movePlayer()
 				//player.image.x -= player.Xspeed; 
 			
 		}
-		if ( rightPressed == true && player.image.x < 675)
+		if ( rightPressed == true && player.image.x < 825)
 		{
 			dirX = 1;
 			//if(player.image.rotation >= 0)
@@ -407,7 +409,7 @@ function moveTrucks()
 function spawnTruck(lane) //spawns a new obstacle in the desired lane.
 {
 	var tempTruck = {image:null, speed:8, inPlay:true};//x:265+100*lane, y:-200,  dX:0, dY:0, 
-	var ranTruckImg = Math.floor(Math.random()*4);
+	var ranTruckImg = Math.floor(Math.random()*15);
 	tempTruck.image = new createjs.Bitmap(truckSrcs[ranTruckImg]);
 	tempTruck.image.x = 140+168*lane;
 	tempTruck.image.y = -200;
