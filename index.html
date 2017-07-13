@@ -1,22 +1,21 @@
 <!doctype html>
 <html>
 	<head>
-		<title>Infinitrucks</title>
+		<title>Highway Escape</title>
 		<!--style -->
 		<link rel="stylesheet" href="./Content/game.css">
 	</head>
 	<body>
 		<!--<p id = "log"></p>-->
 		<div id="wrap" width="1070";>
-			
-			<div id="uiFrame" width="1070" height="1000">
+			<canvas id="start" class="startScreen" width="1070" height="1000"> </canvas>
+			<div id="uiFrame" class="playScreen" width="1070" height="1000">
 				<canvas id="hud" width="730"></canvas>
 			</div>
-			<canvas id="game" width="1070" height="1000"></canvas>
+			<canvas id="game" class="playScreen" width="1070" height="1000"></canvas>
 		</div>
 		
 		
-
 		<!--scripts -->
 		<script src = "./Scripts/lib/EaselJS/lib/easeljs-0.8.2.combined.js"></script>
 		<script src = "./Scripts/lib/PreloadJS/lib/preloadjs-0.6.2.combined.js"></script>

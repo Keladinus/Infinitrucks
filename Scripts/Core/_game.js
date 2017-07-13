@@ -30,11 +30,10 @@ var maxXspeed = 10;
 var maxYspeed = 14;
 
 start();
-//createjs.Ticker.addEventListener("tick", update);
+createjs.Ticker.addEventListener("tick", update);
 
 function start() //Handles getting the game up and running.
 {
-	
 	generateBackground();
 	initPlayer();
 	buildArray();
@@ -44,7 +43,12 @@ function start() //Handles getting the game up and running.
 
 function initPlayer()
 {
-	player = {image:new createjs.Bitmap("Assets/images/ch_playerCar.png"), Xspeed:0, Yspeed:0, HP: 4, hurt:false};
+	player = {
+		image:new createjs.Bitmap("Assets/images/ch_playerCar.png"), 
+		Xspeed:0, Yspeed:0, HP: 4, hurt:false,
+	//	L:0,R:0,T:0,B:0,bounds:{}	
+	};
+
 	player.image.x = 475;
 	player.image.y = 475;
 	stage.addChild(player.image);
@@ -67,7 +71,7 @@ function update()
 			}
 			scrollBackground();
 			movePlayer();
-			//collisionSweep();
+			collisionSweep();
 		}
 		//displayHP();
 	}
@@ -280,7 +284,7 @@ function movePlayer()
 	var dirX = 0, dirY = 0;
 	if(leftPressed || rightPressed)
 	{
-		if ( leftPressed == true && player.image.x > 120) 
+		if ( leftPressed == true && player.image.x > 150) 
 		{
 			dirX = -1;
 			//if(player.image.rotation <= 0)
@@ -314,7 +318,7 @@ function movePlayer()
 			dirY = -1;
 			//player.image.y -= player.Yspeed;
 		}
-		if ( downPressed == true && player.image.y < 600)
+		if ( downPressed == true && player.image.y < 750)
 		{
 			dirY = 1;
 			//player.image.y += player.Yspeed;
@@ -465,18 +469,24 @@ function laneIsOpen(lane) //Ensures that trucks don't spawn on top of each other
 	return false;
 }
 
+
+
 function collisionSweep()
 {
 	for(var lane = 0; lane < trucks.length; lane++)
 	{
+		
 		for(var pos = 0; pos < trucks[lane].length; pos++)
 		{
-			if(collisionCheck(getBounds(player), getBounds(trucks[lane][pos])))
+			if(collisionCheck(getBounds(player.image), getBounds(trucks[lane][pos].image)))
 			{
 				collisionLog(trucks[lane][pos]);
-				trucks[lane].splice(pos,1);
+				//trucks[lane].splice(pos,1);
+				trucks[lane][pos].image=null;
+				console.log("BOOM");
 			}
-				
+		//console.log(getBounds(player.image));	
+		//console.log(getBounds(trucks[lane][pos].image));
 		}
 	}
 
@@ -484,6 +494,8 @@ function collisionSweep()
 
  function collisionCheck(box1, box2) //This function checks two bounding boxes to see if they are colliding, by comparing box1's bounds to box2's.
 {
+	
+	
 	if(		(		(box1.left < box2.right && box1.left > box2.left) 
 				||  (box1.right > box2.left && box1.right < box2.right)
 			)																			//This long, overcomplicated if statement checks if the two bounding boxes intersect.
@@ -491,12 +503,12 @@ function collisionSweep()
 				||  (box1.top < box2.bottom && box1.top > box2.top)		
 			)		)
 	  {
+		  //console.log("BOOM");
 		  console.log(box1.top + " " + box2.bottom);
 		return true;
 	  }
 	  else return false;
-
-	  
+  
 }
 
 function collisionLog(hit)
@@ -505,7 +517,8 @@ function collisionLog(hit)
 	var box = getBounds(hit);
 	var boxout = "L: " + box.left + ", R: " + box.right + ", T: " + box.top + ", B: " + box.bottom;
 	output += boxout;
-	console.log(output);
+	//console.log("output = " + output);
+	//output = Player collided with truck at undefined, undefined with a bounding box L: NaN, R: NaN, T: NaN, B: NaN
 }
 function getBounds(source)
 {
@@ -514,7 +527,6 @@ function getBounds(source)
 	var T = source.y - Math.floor(source.image.height/2);
 	var B = source.y + Math.ceil(source.image.height/2);
 	var bounds = {left:L, right:R, top:T, bottom:B};
-
 	return bounds;
 }
 
