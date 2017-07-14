@@ -3,9 +3,10 @@ var world = document.getElementById("wrap"); // the whole game area
 var worldWidth = world.getAttribute("width"); //1070
 var game = document.getElementById("game");
 var uiFrame = document.getElementById("uiFrame");
-var startMenu = document.getElementById("start");
 uiFrame.style.display = "none";
-game.style.display = "none";
+//game.style.display = "none";
+
+
 
 //-------------------
 //The start menu
@@ -27,6 +28,7 @@ var exitImage = new Image();
 var overExit = new Image();
 var arrowImage = new Image();
 var btOverImage = [overNew, overInst, overExit];
+var btUpImage = [newImage, instructImage, exitImage];
 
 //arrays to hold the positions and sizes of the buttons 
 //[newImage, instructImage, exitImage]
@@ -75,10 +77,9 @@ exitImage.onload = function(){
 }
 
 startCanvas.addEventListener("mousemove", checkPos);
-//startCanvas.addEventListener("mouseup", checkClick);
+startCanvas.addEventListener("click", checkClick);
 
 function checkPos(mouseEvent){
-
    if(mouseEvent.pageX || mouseEvent.pageY == 0)
     {
       mouseX = mouseEvent.pageX - world.offsetLeft;
@@ -93,7 +94,6 @@ function checkPos(mouseEvent){
         var btX = (Math.floor((buttonX[i]/worldWidth)*menuWidth));
         var btY = (Math.floor((buttonY[i]/worldWidth)*menuWidth));
         // btX, btY detail explanation in line 39
-
       if(mouseX > btX && mouseX < btX + buttonWidth[i]){
 				if(mouseY > btY && mouseY < btY + buttonHeight[i])
         {
@@ -101,60 +101,56 @@ function checkPos(mouseEvent){
 					arrowSignX = buttonX[i] - arrowSignWidth;
 					arrowSignY = buttonY[i];
           startCtx.drawImage(arrowImage, arrowSignX, arrowSignY);
-          console.log("mouseX, Y= " + mouseX + " / " + mouseY);
-          console.log("bt X Y = " + btX + " / " + btY);
-          console.log("arrow"+" "+ arrowSignX + "/"+ arrowSignY);
-          //startCtx.drawImage(btOverImage[i], buttonX[i], buttonY[i],buttonWidth[i],buttonHeight[i]);
-          //draw();
+          startCtx.drawImage(btOverImage[i], buttonX[i], buttonY[i],buttonWidth[i],buttonHeight[i]);
+          startCanvas.style.cursor = 'pointer';
+          //console.log("mouseX, Y= " + mouseX + " / " + mouseY);
+          //console.log("bt X Y = " + btX + " / " + btY);
+          //console.log("arrow"+" "+ arrowSignX + "/"+ arrowSignY);
 				}
 			}else{
-            arrowSignVisible = false;
+        if(arrowSignVisible == true){
+          startCtx.drawImage(btUpImage[i],buttonX[i], buttonY[i]);
+          startCtx.clearRect(arrowSignX, arrowSignY, arrowSignWidth, arrowSignHeight);
+          startCanvas.style.cursor = 'default';
+          arrowSignVisible = false;
+        }
 			}
 		}
 }
 
-function draw()
-{
-  //startCtx.clearRect(arrowSignX, arrowSignY, arrowSignWidth, arrowSignHeight);
-  if(arrowSignVisible == true){
-    startCtx.drawImage(arrowImage, arrowSignX, arrowSignY);
-		arrowSignVisible = false;
-  }
-}
-
-/*
 function checkClick(mouseEvent){
 		for(i = 0; i < buttonX.length; i++){
-			if(mouseX > buttonX[i] && mouseX < buttonX[i] + buttonWidth[i]){
-				if(mouseY > buttonY[i] && mouseY < buttonY[i] + buttonHeight[i]){
-					fadeId = setInterval("fadeOut()", 1000/frames);
-					startCanvas.removeEventListener("mousemove", checkPos);
-					startCanvas.removeEventListener("mouseup", checkClick);
+      var btX = (Math.floor((buttonX[i]/worldWidth)*menuWidth));
+      var btY = (Math.floor((buttonY[i]/worldWidth)*menuWidth));
+			if(mouseX > btX && mouseX < btX + buttonWidth[i]){
+				if(mouseY > btY && mouseY < btY + buttonHeight[i]){
+					//startCanvas.removeEventListener("mousemove", checkPos);
+					//startCanvas.removeEventListener("mouseup", checkClick);
+          switch(i)
+          	{
+              case 0:
+                newGame(); 
+              break;
+            }
 				}
 			}
 		}
-}
-
-function fadeOut(){
-    startCtx.fillStyle = "rgba(0,0,0, 0.2)";
-    startCtx.fillRect (0, 0, menuWidth, menuHeight);
-    time += 0.1;
-    if(time >= 2){
-        clearInterval(fadeId);
-        time = 0;
-        timerId = setInterval("update()", 1000/frames);
-        startCanvas.addEventListener("mousemove", checkPos);
-        startCanvas.addEventListener("mouseup", checkClick);
-        
-    }
 }
 
 function newGame(){
-        uiFrame.style.display = "block";
-        game.style.display ="block";
+  uiFrame.style.display = "block";
+  game.style.display ="block";
+  startCtx.clearRect(0, 0, menuWidth, menuHeight);
+  startCanvas.style.display = "none";
+  createjs.Ticker.addEventListener("tick", update);
+
+  if( paused == true ){
+    paused = false;
+  }	else	
+    paused = false;
 }
 
-*/
+
 
 //-------------------
 //UI frame and HUD
@@ -218,7 +214,6 @@ function loadHandler()
 { 
   render(); 
   uiUpdate();
-  
 }
 
 function uiUpdate(){
@@ -239,11 +234,19 @@ function onKeyDown(event)  //HUD cheat codes
 {
   switch(event.keyCode)
 	{
-    case 90: // Z key, to display and start game
+    case 90: // Z key, to display and start game  
+            if( paused == true ){
+                paused = false;
+              }	else	
+                paused = false;
+            
             createjs.Ticker.addEventListener("tick", update);
+
             uiFrame.style.display = "block";
             game.style.display ="block";
-            startMenu.style.display = "none";
+            startCanvas.style.display = "none";
+            loseCanvas.style.display = "none";
+            
             console.log("open");
   	case 73: // I key, to increase health
             if(innerMeter.width < 240 && paused == false)
@@ -263,9 +266,11 @@ function onKeyDown(event)  //HUD cheat codes
               render();
               console.log("width = "+innerMeter.width);
               console.log("sourceWidth = "+innerMeter.sourceWidth);
-            }else if(innerMeter.width <=65 && paused == false)
+            }if(innerMeter.width <=65 && paused == false)
             {
             //game over screen
+            loseCanvas.style.display = "block";
+            gameOver();
             }
             break;
     case 76: // J key, to increase score
@@ -313,3 +318,95 @@ function render() {
      }
 }
 
+
+//-------------------
+//game over screen
+//-------------------
+
+var loseCanvas = document.getElementById("gameOver");;
+var loseCtx = loseCanvas.getContext("2d");
+var overWidth = loseCanvas.offsetWidth;
+loseCanvas.style.display = "none";
+
+var crashImage = new Image();
+var yellowArrow = new Image();
+var orangeNew = new Image();
+var orangeExit = new Image();
+var endBtup = [orangeNew, orangeExit];
+var whiteBt = [newImage, exitImage];
+
+//arrays to hold the positions and sizes of the buttons 
+//[newImage, instructImage, exitImage]
+var endBtX = [300,300]; 
+var endBtY = [725,825];
+var btWidth = [397,294];
+var btHeight = [55,55];
+
+var yellowArrowX = 180;
+var yellowArrowY = 725;
+var yellowArrowWidth = 111;
+var yellowArrowHeight = 52; 
+var yellowVisible = false;
+
+yellowArrow.src = "Assets/images/icon_yellowArrow.png";
+crashImage.src = "Assets/images/endScreen_crash.png";
+orangeNew.src = "Assets/images/endBtOver_newGame.png";
+orangeExit.src = "Assets/images/endBtOver_exit.png";
+
+function gameOver(){
+  
+  loseCtx.drawImage(crashImage, 130, 100);
+  loseCtx.drawImage(newImage, endBtX[0], endBtY[0]);
+  loseCtx.drawImage(exitImage, endBtX[1], endBtY[1]);
+
+  if( paused == false ){
+      paused = true;
+    }	else	
+			paused = false;
+}
+
+loseCanvas.addEventListener("mousemove", moveYellowAr);
+loseCanvas.addEventListener("mouseclick", clickBt);
+
+function moveYellowAr(e){
+    if(e.pageX || e.pageY == 0)
+    {
+      mouseX = e.pageX - world.offsetLeft;
+      mouseY = e.pageY - world.offsetTop;
+    }else if(e.offsetX || e.offsetY == 0)
+    {
+      mouseX = e.offsetX;
+      mouseY = e.offsetY;
+    }
+
+    for(i = 0; i < endBtX.length; i++)
+    {
+        var offsetEndBtX = (Math.floor((endBtX[i]/worldWidth)*overWidth));
+        var offsetEndBtY = (Math.floor((endBtY[i]/worldWidth)*overWidth));
+        if(mouseX > offsetEndBtX && mouseX < offsetEndBtX + btWidth[i]){
+          if(mouseY > offsetEndBtY && mouseY < offsetEndBtY + btHeight[i])
+          {
+            yellowArrowX = endBtX[i] - yellowArrowWidth - 10;
+            yellowArrowY = endBtY[i];
+            loseCtx.drawImage(yellowArrow, yellowArrowX, yellowArrowY);
+            loseCtx.drawImage(endBtup[i],endBtX[i],endBtY[i]);
+            loseCanvas.style.cursor = 'pointer';
+            yellowVisible = true;
+          }
+        }else if ((mouseX < offsetEndBtX || mouseX > offsetEndBtX + btWidth[i])
+                  ||(mouseY < offsetEndBtY || mouseY > offsetEndBtY + btHeight[i])){
+            if(yellowVisible == true){
+              //loseCtx.clearRect(0, 0, 600, 600);
+              //loseCtx.clearRect(yellowArrowX, endBtY[i], yellowArrowX + yellowArrowX + btWidth[i], btHeight[i]);
+              loseCtx.drawImage(whiteBt[i], endBtX[i], endBtY[i]);
+              loseCtx.clearRect(yellowArrowX, yellowArrowY, yellowArrowWidth, yellowArrowHeight);
+              loseCanvas.style.cursor = 'pointer';
+              yellowVisible = false;
+            }
+		    }
+    }
+}
+
+function clickBt(){
+
+}

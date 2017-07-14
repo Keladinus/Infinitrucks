@@ -34,7 +34,7 @@ start();
 
 function start() //Handles getting the game up and running.
 {
-	
+	paused = true;
 	generateBackground();
 	initPlayer();
 	buildArray();

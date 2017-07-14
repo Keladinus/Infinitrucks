@@ -1,28 +1,8 @@
 
 #wrap{
-	width:105vh;
+	width:100vh;
 	margin: 0 auto;
 	position: relative;
-}
-
-#game
-{
-	z-index:0;
-	position: absolute;
-	background-color: darkgrey;	
-	height:100vh;
-	width:100%;
-	border: 6px solid #000000;
-}
-
-#uiFrame{
-	z-index:1;
-	position: absolute;
-	height:100vh;
-	width:100%;
-	background-image:url(../Assets/images/frame.png);
-	background-size: 100% 100%;
-	border: 6px solid #000000;	
 }
 
 #start{
@@ -34,8 +14,36 @@
 	background-size: 100% 100%;
 }
 
+#uiFrame{
+	z-index:1;
+	position: absolute;
+	height:100vh;
+	width:100%;
+	background-image:url(../Assets/images/frame.png);
+	background-size: 100% 100%;
+/*border: 6px solid #000000;	
+*/
+}
+
 #hud{
 	width:100%;
+}
+
+#game
+{
+	z-index:0;
+	position: absolute;
+	background-color: darkgrey;	
+	height:100vh;
+	width:100%;
+}
+
+#gameOver{
+	z-index:3;
+	position: absolute;
+	height:100vh;
+	width:100%;
+	background-color: rgba(0, 0, 0,0.8);
 }
 
 body 
