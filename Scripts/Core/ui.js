@@ -7,6 +7,11 @@ uiFrame.style.display = "none";
 //game.style.display = "none";
 
 
+var loseHealth = new Event("loseHealth"); //NG
+var gainHealth = new Event("gainHealth");
+var gainScore = new Event("gainScore");
+var noHP = new Event("noHP");
+
 
 //-------------------
 //The start menu
@@ -229,6 +234,11 @@ if car and pickup collision
 innerScore.width++;
 innerScore.sourceWidth++;
 */
+
+window.addEventListener("loseHealth", function(e){innerMeter.width -=18; innerMeter.sourceWidth -=18; render();})  //NG
+window.addEventListener("gainHealth", function(e){innerMeter.width +=18; innerMeter.sourceWidth +=18; render();})
+window.addEventListener("gainScore", function(e){innerScore.width += 8; innerScore.sourceWidth += 8;  render();})
+window.addEventListener("noHP", function(e){gameOver();loseCanvas.style.display = "block";});
 
 function onKeyDown(event)  //HUD cheat codes
 {

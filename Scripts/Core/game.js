@@ -8,7 +8,6 @@ var background = [];
 var backgroundSpeed = 16;
 var speedMultiplier = 1;
 var turnSpeed = 3;
-//var log = document.getElementById("log");
 var score = 0;
 var player;
 var SIZE = 200;  //original 150
@@ -19,18 +18,26 @@ var rightPressed = false;
 var upPressed = false;
 var downPressed = false;
 var trucksInPlay = 0;
-var healthPickupSpawnInterval = setInterval(trySpawnHealthPickup, 500);
-var scorePickupSpawnInterval = setInterval(trySpawnScorePickup, 500);
-var truckSpawnInterval = setInterval(trySpawnTrucks, 400); //Every half a second, we try to spawn trucks.
+var healthPickupSpawnInterval = setInterval(trySpawnHealthPickup, 600);
+var scorePickupSpawnInterval = setInterval(trySpawnScorePickup, 600);
+var truckSpawnInterval = setInterval(trySpawnTrucks, 400);
 var scoreGainInterval = setInterval(addScore, 300);
 var freeze = false;
 var paused = false;
 var cheatsEnabled = true;
 var maxXspeed = 10;
 var maxYspeed = 14;
+var hurtEffectInterval;
+var hurtEffectCounter = 0;
+
+var loseHealth = new Event("loseHealth");
+var gainHealth = new Event("gainHealth");
+var gainScore = new Event("gainScore");
+var noHP = new Event("noHP");
+
 
 start();
-//createjs.Ticker.addEventListener("tick", update);
+createjs.Ticker.addEventListener("tick", update);
 
 function start() //Handles getting the game up and running.
 {
@@ -44,7 +51,7 @@ function start() //Handles getting the game up and running.
 
 function initPlayer()
 {
-	player = {image:new createjs.Bitmap("Assets/images/ch_playerCar.png"), Xspeed:0, Yspeed:0, HP: 4, hurt:false};
+	player = {image:new createjs.Bitmap("Assets/images/ch_playerCar.png"), Xspeed:0, Yspeed:0, HP: 10, hurt:false};
 	player.image.x = 475;
 	player.image.y = 475;
 	stage.addChild(player.image);
@@ -52,7 +59,6 @@ function initPlayer()
 
 function update()
 {
-
 	if(isRunning && !paused)
 	{
 		if(stage.getChildIndex(player.image)< stage.getNumChildren()-1)
@@ -67,9 +73,14 @@ function update()
 			}
 			scrollBackground();
 			movePlayer();
-			//collisionSweep();
+			collisionSweep();
+			if(player.hurt && hurtEffectInterval == null)
+				hurtPlayer();
 		}
-		//displayHP();
+		else
+		{
+			dispatchEvent(noHP);
+		}
 	}
 	stage.update();
 }
@@ -144,7 +155,7 @@ function trySpawnHealthPickup()
 {
 	var spawned = false;
 	var chance = Math.random() * 100;
-	if(chance <= 20)
+	if(chance <= 15)
 	{
 		spawnPickup(0);
 		spawned = true;
@@ -155,7 +166,7 @@ function trySpawnScorePickup()
 {
 	var spawned = false;
 	var chance = Math.random() * 100;
-	if(chance <= 20)
+	if(chance <= 15)
 	{
 		spawnPickup(1);
 		spawned = true;
@@ -169,21 +180,21 @@ function spawnPickup(type)
 	switch(type)
 	{
 		case 0:
-				tempPickup = new createjs.Bitmap("Assets/images/pk_addHealth.png");	
+				tempPickup = {bmp:new createjs.Bitmap("Assets/images/pk_addHealth.png"),type:0};	
 				break;
 		case 1:
-				tempPickup = new createjs.Bitmap("Assets/images/pk_addScore.png");
+				tempPickup = {bmp:new createjs.Bitmap("Assets/images/pk_addScore.png"),type:1};
 				break;
 		default:
 				console.log("Unhandled key.");
 				break;
 	}
-	if(tempPickup != null)
+	if(tempPickup.bmp != null)
 	{
-		tempPickup.x=120 + Math.floor(Math.random()*610);
-		tempPickup.y=-200;
+		tempPickup.bmp.x=120 + Math.floor(Math.random()*610);
+		tempPickup.bmp.y=-200;
 		pickups.push(tempPickup);
-		stage.addChild(tempPickup);
+		stage.addChild(tempPickup.bmp);
 	}
 }
 
@@ -193,10 +204,10 @@ function movePickups()
 	{
 		if(pickups[i])
 		{
-			pickups[i].y += backgroundSpeed;
-			if(pickups[i].y > 900)
+			pickups[i].bmp.y += backgroundSpeed;
+			if(pickups[i].bmp.y > 900)
 			{
-				stage.removeChild(pickups[i]);
+				stage.removeChild(pickups[i].bmp);
 					pickups.splice(i,1);
 			}
 		}
@@ -228,10 +239,7 @@ function onKeyDown(event)
 				downPressed = true;
 				break;
 		case 80:		// P key, for pausing.
-				if( paused == false )
-				paused = true;
-				else
-				paused = false;
+				togglePause();
 				break;
 		case 70:		// F key, to freeze trucks in place.  For debug purposes only.
 				if(cheatsEnabled)
@@ -282,16 +290,11 @@ function movePlayer()
 	{
 		if ( leftPressed == true && player.image.x > 120) 
 		{
-			dirX = -1;
-			//if(player.image.rotation <= 0)
-				//player.image.x -= player.Xspeed; 
-			
+			dirX = -1;			
 		}
 		if ( rightPressed == true && player.image.x < 825)
 		{
 			dirX = 1;
-			//if(player.image.rotation >= 0)
-				//player.image.x += player.Xspeed;
 		}
 	}
 	
@@ -312,12 +315,10 @@ function movePlayer()
 		if ( upPressed == true && player.image.y > 100)
 		{
 			dirY = -1;
-			//player.image.y -= player.Yspeed;
 		}
 		if ( downPressed == true && player.image.y < 600)
 		{
 			dirY = 1;
-			//player.image.y += player.Yspeed;
 		}
 	}
 
@@ -467,19 +468,41 @@ function laneIsOpen(lane) //Ensures that trucks don't spawn on top of each other
 
 function collisionSweep()
 {
-	for(var lane = 0; lane < trucks.length; lane++)
+	if(!player.hurt)
 	{
-		for(var pos = 0; pos < trucks[lane].length; pos++)
+		for(var lane = 0; lane < trucks.length; lane++)
 		{
-			if(collisionCheck(getBounds(player), getBounds(trucks[lane][pos])))
-			{
-				collisionLog(trucks[lane][pos]);
-				trucks[lane].splice(pos,1);
+			for(var pos = 0; pos < trucks[lane].length; pos++)
+			{			
+				if(collisionCheck(getPlayerBounds(player.image), getTruckBounds(trucks[lane][pos].image)))
+				{
+					player.hurt = true;	
+				}				
 			}
-				
 		}
 	}
 
+	for(var i = 0; i < pickups.length; i++)
+	{
+		if(collisionCheck(getPlayerBounds(player.image),getPickupBounds(pickups[i].bmp)))
+		{
+			if(pickups[i].type == 0)
+			{
+				player.HP++;
+				dispatchEvent(gainHealth);
+				stage.removeChild(pickups[i].bmp);
+				pickups.splice(i,1);
+			}
+			else if(pickups[i].type == 1)
+			{
+				//add score here
+				dispatchEvent(gainScore);
+				stage.removeChild(pickups[i].bmp);
+				pickups.splice(i,1);
+			}
+			
+		}
+	}
 }
 
  function collisionCheck(box1, box2) //This function checks two bounding boxes to see if they are colliding, by comparing box1's bounds to box2's.
@@ -491,7 +514,7 @@ function collisionSweep()
 				||  (box1.top < box2.bottom && box1.top > box2.top)		
 			)		)
 	  {
-		  console.log(box1.top + " " + box2.bottom);
+		  //console.log(box1.top + " " + box2.bottom);
 		return true;
 	  }
 	  else return false;
@@ -502,12 +525,35 @@ function collisionSweep()
 function collisionLog(hit)
 {
 	var output = "Player collided with truck at " + hit.x + ", " + hit.y + " with a bounding box ";
-	var box = getBounds(hit);
+	var box = getPlayerBounds(hit);
 	var boxout = "L: " + box.left + ", R: " + box.right + ", T: " + box.top + ", B: " + box.bottom;
 	output += boxout;
-	console.log(output);
+	//console.log(output);
 }
-function getBounds(source)
+
+function getPlayerBounds(source)
+{
+	var L = source.x - Math.floor(source.image.width/2.2);
+	var R = source.x + Math.ceil(source.image.width/2.2);
+	var T = source.y - Math.floor(source.image.height/2);
+	var B = source.y + Math.ceil(source.image.height/2);
+	var bounds = {left:L, right:R, top:T, bottom:B};
+
+	return bounds;
+}
+
+function getTruckBounds(source)
+{
+	var L = source.x - Math.floor(source.image.width/2);
+	var R = source.x + Math.ceil(source.image.width/2);
+	var T = source.y - Math.floor(source.image.height/2);
+	var B = source.y + source.image.height*0.75;
+	var bounds = {left:L, right:R, top:T, bottom:B};
+
+	return bounds;
+}
+
+function getPickupBounds(source)
 {
 	var L = source.x - Math.floor(source.image.width/2);
 	var R = source.x + Math.ceil(source.image.width/2);
@@ -516,6 +562,7 @@ function getBounds(source)
 	var bounds = {left:L, right:R, top:T, bottom:B};
 
 	return bounds;
+
 }
 
 function addScore()
@@ -523,7 +570,53 @@ function addScore()
 	score += 10;
 }
 
-function displayHP()
+function hurtEffect()
 {
-	log.innerHTML = "HP   " + player.HP + "     Score   " + score;
+	if(player.image.alpha == 1)
+		player.image.alpha = 0.5;
+	else
+		player.image.alpha = 1;
+
+	hurtEffectCounter++;
+	if(hurtEffectCounter >= 8)
+		clearHurtEffect();
+}
+
+function hurtPlayer()
+{
+	player.hurt = true;
+	player.HP--;
+	//console.log(player.HP);
+	hurtEffectInterval = setInterval(hurtEffect, 150);
+	dispatchEvent(loseHealth);
+}
+
+function clearHurtEffect()
+{
+	player.hurt = false;
+	//console.log(player.hurt);
+	clearInterval(hurtEffectInterval);
+	hurtEffectInterval = null;
+	hurtEffectCounter = 0;
+}
+
+function togglePause()
+{
+	if(!paused)
+	{
+		paused = true;
+		clearInterval(healthPickupSpawnInterval);
+		clearInterval(scorePickupSpawnInterval);
+		clearInterval(scoreGainInterval);
+		clearInterval(truckSpawnInterval);
+	}
+	else
+	{
+		paused = false;	
+		healthPickupSpawnInterval = setInterval(trySpawnHealthPickup, 500);
+		scorePickupSpawnInterval = setInterval(trySpawnScorePickup, 500);
+		truckSpawnInterval = setInterval(trySpawnTrucks, 400); //Every half a second, we try to spawn trucks.
+		scoreGainInterval = setInterval(addScore, 300);
+	}
+
 }
