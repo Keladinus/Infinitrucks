@@ -29,11 +29,12 @@ var maxXspeed = 10;
 var maxYspeed = 14;
 var hurtEffectInterval;
 var hurtEffectCounter = 0;
-
+var gameBounds = {left:122,right:858,top:152,bottom:660};
 var loseHealth = new Event("loseHealth");
 var gainHealth = new Event("gainHealth");
 var gainScore = new Event("gainScore");
 var noHP = new Event("noHP");
+var dirX = 0, dirY = 0;
 
 
 start();
@@ -285,54 +286,11 @@ function onKeyUp(event)
 function movePlayer()
 {	
 	handleTurning();
-	var dirX = 0, dirY = 0;
-	if(leftPressed || rightPressed)
-	{
-		if ( leftPressed == true && player.image.x > 120) 
-		{
-			dirX = -1;			
-		}
-		if ( rightPressed == true && player.image.x < 825)
-		{
-			dirX = 1;
-		}
-	}
+	getPlayerMoveDirection();
+	handleAcceleration();
+	applyPlayerMovement();
 	
-	if((player.Xspeed < maxXspeed && dirX > 0) || (player.Xspeed > -maxXspeed && dirX < 0))
-		player.Xspeed += dirX;
-	else if(dirX == 0)
-	{
-		if(player.Xspeed > 0)
-			player.Xspeed--;
-		else if(player.Xspeed < 0)
-			player.Xspeed++;
-	}
 	
-	player.image.x += player.Xspeed;
-
-	if(upPressed || downPressed)
-	{
-		if ( upPressed == true && player.image.y > 100)
-		{
-			dirY = -1;
-		}
-		if ( downPressed == true && player.image.y < 600)
-		{
-			dirY = 1;
-		}
-	}
-
-	if((player.Yspeed < maxYspeed && dirY > 0) || (player.Yspeed > -maxYspeed && dirY < 0))
-		player.Yspeed += dirY;
-	else if(dirY == 0)
-	{
-		if(player.Yspeed > 0)
-			player.Yspeed--;
-		else if(player.Yspeed < 0)
-			player.Yspeed++;
-	}
-	
-	player.image.y += player.Yspeed;
 }
 
 function handleTurning()
@@ -380,6 +338,87 @@ function handleTurning()
 		}
 	}
 	player.image.rotation = r;
+}
+
+function getPlayerMoveDirection()
+{
+	if(leftPressed || rightPressed)
+	{
+		if ( leftPressed == true && player.image.x > gameBounds.left) 
+		{
+			dirX = -1;			
+		}
+		if ( rightPressed == true && player.image.x < gameBounds.right)
+		{
+			dirX = 1;
+		}
+	}
+	else dirX = 0;
+
+	if(upPressed || downPressed)
+	{
+		if ( upPressed == true && player.image.y > gameBounds.top)
+		{
+			dirY = -1;
+		}
+		if ( downPressed == true && player.image.y < gameBounds.bottom)
+		{
+			dirY = 1;
+		}
+	}
+	else dirY = 0;
+}
+function handleAcceleration()
+{
+	if((player.Xspeed < maxXspeed && dirX > 0) || (player.Xspeed > -maxXspeed && dirX < 0))
+		player.Xspeed += dirX;
+	else if(dirX == 0)
+	{
+		if(player.Xspeed > 0)
+			player.Xspeed--;
+		else if(player.Xspeed < 0)
+			player.Xspeed++;
+	}
+
+	if((player.Yspeed < maxYspeed && dirY > 0) || (player.Yspeed > -maxYspeed && dirY < 0))
+		player.Yspeed += dirY;
+	else if(dirY == 0)
+	{
+		if(player.Yspeed > 0)
+			player.Yspeed--;
+		else if(player.Yspeed < 0)
+			player.Yspeed++;
+	}
+}
+
+function applyPlayerMovement()
+{
+	var newXpos = player.image.x + player.Xspeed;
+	if(newXpos >= gameBounds.left && newXpos <= gameBounds.right)
+		player.image.x = newXpos;
+	else if(player.Xspeed < 0)
+	{
+		player.image.x = gameBounds.left;
+		player.Xspeed = 0;
+	}
+	else if(player.Xspeed > 0)
+	{
+		player.image.x = gameBounds.right;
+		player.Xspeed = 0;
+	}
+	var newYpos = player.image.y + player.Yspeed;
+	if(newYpos >= gameBounds.top && newYpos <= gameBounds.bottom)
+		player.image.y = newYpos;
+	else if(player.Yspeed < 0)
+	{
+		player.image.y = gameBounds.top;
+		player.Yspeed = 0;
+	}
+	else if(player.Yspeed > 0)
+	{
+		player.image.y = gameBounds.bottom;
+		player.Yspeed = 0;
+	}
 }
 
 function moveTrucks()
