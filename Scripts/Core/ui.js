@@ -95,32 +95,37 @@ function checkPos(mouseEvent){
       mouseY = mouseEvent.offsetY;
     }
 
-    for(i = 0; i < buttonX.length; i++){
-        var btX = (Math.floor((buttonX[i]/worldWidth)*menuWidth));
-        var btY = (Math.floor((buttonY[i]/worldWidth)*menuWidth));
-        // btX, btY detail explanation in line 39
-      if(mouseX > btX && mouseX < btX + buttonWidth[i]){
-				if(mouseY > btY && mouseY < btY + buttonHeight[i])
-        {
-					arrowSignVisible = true;
-					arrowSignX = buttonX[i] - arrowSignWidth;
-					arrowSignY = buttonY[i];
-          startCtx.drawImage(arrowImage, arrowSignX, arrowSignY);
-          startCtx.drawImage(btOverImage[i], buttonX[i], buttonY[i],buttonWidth[i],buttonHeight[i]);
-          startCanvas.style.cursor = 'pointer';
-          //console.log("mouseX, Y= " + mouseX + " / " + mouseY);
-          //console.log("bt X Y = " + btX + " / " + btY);
-          //console.log("arrow"+" "+ arrowSignX + "/"+ arrowSignY);
-				}
-			}else{
-        if(arrowSignVisible == true){
-          startCtx.drawImage(btUpImage[i],buttonX[i], buttonY[i]);
+    for(i = 0; i < buttonX.length;i++){
+      var btX = (Math.floor((buttonX[i]/worldWidth)*menuWidth));
+      var btY = (Math.floor((buttonY[i]/worldWidth)*menuWidth));
+      var btWidth = (buttonWidth[i]/worldWidth)*menuWidth;
+      var btHeight = (buttonHeight[i]/worldWidth)*menuWidth;
+      // btX, btY detail explanation in line 39
+
+    if(mouseX > btX && mouseX < btX + btWidth && mouseY > btY && mouseY < btY + btHeight)
+      {
           startCtx.clearRect(arrowSignX, arrowSignY, arrowSignWidth, arrowSignHeight);
-          startCanvas.style.cursor = 'default';
-          arrowSignVisible = false;
-        }
-			}
-		}
+              if(arrowSignVisible == false)
+                  {
+                      console.log("in bt "+i);
+                      console.log("bt"+i+" X = " + (Math.floor((buttonX[i]/worldWidth)*menuWidth)));
+                      console.log("bt"+i+" Y = " + (Math.floor((buttonY[i]/worldWidth)*menuWidth)));
+                      
+                      arrowSignX = buttonX[i] - arrowSignWidth;
+                      arrowSignY = buttonY[i];
+                      startCtx.drawImage(arrowImage, arrowSignX, arrowSignY);
+                      arrowSignVisible = true;
+                      startCanvas.style.cursor = "pointer";
+                  }
+      }else
+      {
+          if(arrowSignVisible == true)
+             {   
+              console.log("out bt "+i);
+              arrowSignVisible = false;
+              };
+      }
+  }
 }
 
 function checkClick(mouseEvent){
@@ -225,16 +230,6 @@ function uiUpdate(){
   window.addEventListener("keydown", onKeyDown);
 }
 
-/*
-if car and truk collision
-innerMeter.width--;
-innerMeter.sourceWidth--;
-
-if car and pickup collision
-innerScore.width++;
-innerScore.sourceWidth++;
-*/
-
 window.addEventListener("loseHealth", function(e){innerMeter.width -=18; innerMeter.sourceWidth -=18; render();})  //NG
 window.addEventListener("gainHealth", function(e){innerMeter.width +=18; innerMeter.sourceWidth +=18; render();})
 window.addEventListener("gainScore", function(e){innerScore.width += 8; innerScore.sourceWidth += 8;  render();})
@@ -310,7 +305,6 @@ function onKeyDown(event)  //HUD cheat codes
 				break;
   }
 }
-
 
 function render() {
     ctx.clearRect(0, 0, c.width, c.height); 
