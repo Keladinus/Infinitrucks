@@ -62,9 +62,8 @@ function update()
 {
 	if(isRunning && !paused)
 	{
-		if(stage.getChildIndex(player.image)< stage.getNumChildren()-1)
-			stage.setChildIndex(player.image, stage.getNumChildren()-1);
 		trucksInPlay = countTrucksInPlay();
+		setImageLayeringOrder();
 		if(isAlive())
 		{
 			if(!freeze )
@@ -85,6 +84,35 @@ function update()
 	}
 	stage.update();
 }
+
+function setImageLayeringOrder()
+{
+	//first, move pickups to the bottom(above the background)
+	for(var i = 0; i < pickups.length; i++)
+	{
+		if(stage.getChildIndex(pickups[i].bmp) > background.length)
+			stage.setChildIndex(pickups[i].bmp, background.length);
+	}
+	//ensure all background tiles are on the bottom of the pile.
+	for(var i = 0; i < background.length; i++)
+	{
+		if(stage.getChildIndex(background[i]) > 0)
+			stage.setChildIndex(background, 0);
+	}
+	//Move the player to the top.
+		if(stage.getChildIndex(player.image)< stage.getNumChildren()-1)
+			stage.setChildIndex(player.image, stage.getNumChildren()-1);
+	//Pile the trucks on top of the player.
+	for(var lane = 0; lane < trucks.length; lane++)
+	{
+		for(var pos = 0; pos < trucks[lane].length; pos++)
+		{
+			if(stage.getChildIndex(trucks[lane][pos]) < stage.getNumChildren()-1)
+			stage.setChildIndex(trucks[lane][pos], stage.getNumChildren()-1);
+		}
+	}
+}
+
 
 function generateBackground() 
 {
@@ -289,8 +317,6 @@ function movePlayer()
 	getPlayerMoveDirection();
 	handleAcceleration();
 	applyPlayerMovement();
-	
-	
 }
 
 function handleTurning()
@@ -430,7 +456,7 @@ function moveTrucks()
 			if(trucks[lane][pos])
 			{
 				trucks[lane][pos].image.y += trucks[lane][pos].speed;
-				if(trucks[lane][pos].image.y > 900)
+				if(trucks[lane][pos].image.y > 1000)
 				{
 					stage.removeChild(trucks[lane][pos].image);
 					trucks[lane].splice(pos,1);
@@ -449,7 +475,7 @@ function moveTrucks()
 
 function spawnTruck(lane) //spawns a new obstacle in the desired lane.
 {
-	var tempTruck = {image:null, speed:8, inPlay:true};//x:265+100*lane, y:-200,  dX:0, dY:0, 
+	var tempTruck = {image:null, speed:8, inPlay:true};
 	var ranTruckImg = Math.floor(Math.random()*15);
 	tempTruck.image = new createjs.Bitmap(truckSrcs[ranTruckImg]);
 	tempTruck.image.x = 140+168*lane;
@@ -523,8 +549,9 @@ function collisionSweep()
 
 	for(var i = 0; i < pickups.length; i++)
 	{
-		if(collisionCheck(getPlayerBounds(player.image),getPickupBounds(pickups[i].bmp)))
-		{
+		if(collisionCheck(getPickupBounds(pickups[i].bmp),getPlayerBounds(player.image)))
+		{	//Had to reverse the collision check here to compare the pickup to the player, vs vice versa with truck.
+			console.log("hit a pickup");
 			if(pickups[i].type == 0)
 			{
 				player.HP++;
@@ -553,7 +580,31 @@ function collisionSweep()
 				||  (box1.top < box2.bottom && box1.top > box2.top)		
 			)		)
 	  {
-		  //console.log(box1.top + " " + box2.bottom);
+		if((box1.left < box2.right && box1.left > box2.left) && (box1.bottom > box2.top && box1.bottom < box2.bottom))
+		{
+			console.log("lower left of player hit something");
+			console.log("player's left and bottom bounds: " + box1.left + " " + box1.bottom);
+			console.log("object's right and top bounds: "+ box2.right + " " + box2.top);
+		}
+		if((box1.right > box2.left && box1.right < box2.right) && (box1.bottom > box2.top && box1.bottom < box2.bottom))
+		{
+			console.log("lower right of player hit something");
+			console.log("player's right and bottom bounds: " + box1.right + " " + box1.bottom);
+			console.log("object's left and top bounds: "+ box2.left + " " + box2.top);
+		}
+		if((box1.left < box2.right && box1.left > box2.left) && (box1.top < box2.bottom && box1.top > box2.top))
+		{
+			console.log("top left of player hit something");
+			console.log("player's left and top bounds: " + box1.left + " " + box1.top);
+			console.log("object's right and bottom bounds: "+ box2.right + " " + box2.bottom);
+		}
+		if((box1.right > box2.left && box1.right < box2.right) && (box1.top < box2.bottom && box1.top > box2.top))
+		{
+			console.log("top right of player hit something");
+			console.log("player's right and top bounds: " + box1.right + " " + box1.top);
+			console.log("object's left and bottom bounds: "+ box2.left + " " + box2.bottom);
+		}
+		
 		return true;
 	  }
 	  else return false;
@@ -572,10 +623,10 @@ function collisionLog(hit)
 
 function getPlayerBounds(source)
 {
-	var L = source.x - Math.floor(source.image.width/2.2);
-	var R = source.x + Math.ceil(source.image.width/2.2);
-	var T = source.y - Math.floor(source.image.height/2);
-	var B = source.y + Math.ceil(source.image.height/2);
+	var L = source.x + 10 - source.image.width/2;//Removing 10 from all sides gives the player a little leeway for steering around obstacles.
+	var R = source.x - 10 + source.image.width/2;
+	var T = source.y + 10 - source.image.height/2;
+	var B = source.y -10 + source.image.height/2;
 	var bounds = {left:L, right:R, top:T, bottom:B};
 
 	return bounds;
@@ -583,10 +634,10 @@ function getPlayerBounds(source)
 
 function getTruckBounds(source)
 {
-	var L = source.x - Math.floor(source.image.width/2);
-	var R = source.x + Math.ceil(source.image.width/2);
-	var T = source.y - Math.floor(source.image.height/2);
-	var B = source.y + source.image.height*0.75;
+	var L = source.x -source.image.width/2;
+	var R = source.x + source.image.width/2;
+	var T = source.y + 75 - source.image.height/2; //For some reason, the trucks are rendered 75 below their coordinates, so we offset hitbox to compensate.
+	var B = source.y + 75 + source.image.height/2;
 	var bounds = {left:L, right:R, top:T, bottom:B};
 
 	return bounds;
@@ -594,10 +645,10 @@ function getTruckBounds(source)
 
 function getPickupBounds(source)
 {
-	var L = source.x - Math.floor(source.image.width/2);
-	var R = source.x + Math.ceil(source.image.width/2);
-	var T = source.y - Math.floor(source.image.height/2);
-	var B = source.y + Math.ceil(source.image.height/2);
+	var L = source.x - 25 - source.image.width/3; //Even more hitbox manipulation shenanigans required here for accurate collisions.
+	var R = source.x - 25 + source.image.width/3;
+	var T = source.y - 50 - source.image.height/3;
+	var B = source.y - 50 + source.image.height/3;
 	var bounds = {left:L, right:R, top:T, bottom:B};
 
 	return bounds;
