@@ -695,6 +695,7 @@ function togglePause()
 	if(!paused)
 	{
 		paused = true;
+		clearInterval(timeCount);
 		clearInterval(healthPickupSpawnInterval);
 		clearInterval(scorePickupSpawnInterval);
 		clearInterval(scoreGainInterval);
@@ -703,6 +704,7 @@ function togglePause()
 	else
 	{
 		paused = false;	
+		timeCount = setInterval(timer, 1000);
 		healthPickupSpawnInterval = setInterval(trySpawnHealthPickup, 500);
 		scorePickupSpawnInterval = setInterval(trySpawnScorePickup, 500);
 		truckSpawnInterval = setInterval(trySpawnTrucks, 400); //Every half a second, we try to spawn trucks.

@@ -3,18 +3,22 @@
 	<head>
 		<title>Highway Escape</title>
 		<!--style -->
-		<link rel="stylesheet" href="./Content/game.css">
+		<link rel="stylesheet" href="./Content/newUI.css">
+		<link href="https://fonts.googleapis.com/css?family=Quantico" rel="stylesheet">
 	</head>
 	<body>
-		<div id="wrap" width="1070";>
-			<canvas id="gameOver" width="1070" height="1000"></canvas>
-			<canvas id="start" width="1070" height="1000"></canvas>
-			<div id="uiFrame" class="playScreen" width="1070" height="1000">
-				<canvas id="hud" width="730"></canvas>
-			</div>-->
+		<div id = "wrap">
+			<canvas id = "scoresTxt" width="1070" height="1000"></canvas>
+			<canvas id = "hud"  width="1070" height="1000"></canvas>
+			<canvas id = "frontCloud" width="1070" height="1000"></canvas>
+			<canvas id = "sunMoon" width="1070" height="1000"></canvas>
+			<canvas id = "nightView" width="1070" height="1000"></canvas>
+			<canvas id = "dayView" width="1070" height="1000"></canvas>
+			<canvas id = "uiFrame" width="1070" height="1000"></canvas>
+
 			<canvas id="game" class="playScreen" width="1070" height="1000"></canvas>
+			<!-- <canvas id="start" width="1070" height="1000"></canvas>-->
 		</div>
-		
 		
 		<!--scripts -->
 		<script src = "./Scripts/lib/EaselJS/lib/easeljs-0.8.2.combined.js"></script>
@@ -22,6 +26,7 @@
 		<script src = "./Scripts/lib/SoundJS/lib/soundjs-0.6.2.combined.js"></script>
 		<script src = "./Scripts/lib/TweenJS/lib/tweenjs-0.6.2.combined.js"></script>
 		<script src="./Scripts/Core/game.js"></script>
-		<script src="./Scripts/Core/ui.js"></script>
+		<script src="./Scripts/Core/newUi.js"></script>
+		<script src="./Scripts/Core/menu.js"></script>
 	</body>
 </html>
