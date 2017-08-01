@@ -4,8 +4,14 @@ var SMCanvas = document.getElementById("sunMoon");
 var SMCtx = SMCanvas.getContext("2d");
 var cloudCanvas = document.getElementById("frontCloud");
 var cloudCtx = cloudCanvas.getContext("2d");
+var nightCloudCavs = document.getElementById("frontCloudNight");
+var nightCloudCtx = nightCloudCavs.getContext("2d");
 var scoreCanvas = document.getElementById("scoresTxt");
 var scoreCtx = scoreCanvas.getContext("2d");
+var dayCanvas = document.getElementById("dayView");
+var dayCtx = dayCanvas.getContext("2d");
+var nightCanvas = document.getElementById("nightView");
+var nightCtx = nightCanvas.getContext("2d");
 
 var health = 70;
 var wound = 10;
@@ -14,6 +20,10 @@ var timeMin = 0;
 var timeHr = 0;
 var timeCount = 0;
 //var timeCount = setInterval(timer, 1000);
+
+var rotAng = 0;
+var nightOpcy = parseFloat(0.0);
+dayCanvas.style.opacity = 1;
 
 //sun and moon
 var star = {
@@ -38,8 +48,8 @@ sun.image.addEventListener("load", loadHandler, false);
 sun.image.src = "Assets/images/img_sun.png";
 
 var moon = Object.create(star);
-moon.x = 830;
-moon.y = 800;
+moon.x = -850;
+moon.y = 1100;
 moon.sourceWidth = 265;
 moon.sourceHeight = 265;
 moon.image = new Image();
@@ -63,6 +73,14 @@ dayCloud.image = new Image();
 dayCloud.image.addEventListener("load", loadHandler, false);
 dayCloud.image.src = "Assets/images/img_uppercloud.png";
 
+var nightCloud = Object.create(upperCloud);
+nightCloud.image = new Image();
+nightCloud.image.addEventListener("load", loadHandler, false);
+nightCloud.image.src = "Assets/images/img_uppercloud_night.png";
+
+var nightSky = new Image();
+nightSky.addEventListener("load", loadHandler, false);
+nightSky.src = "Assets/images/img_nightView.png";
 
 //UI HUD
 var spriteObject =
@@ -135,13 +153,14 @@ var timeS = {
   height:50
 }
 
-
 function render() {
     SMCtx.drawImage(sun.image,sun.x,sun.y,sun.width,sun.height);
-    //SMCtx.drawImage(moon.image,sun.x,sun.y,sun.width,sun.height);
+    SMCtx.drawImage(moon.image,moon.x,moon.y,moon.width,moon.height);
     cloudCtx.drawImage(dayCloud.image,dayCloud.x,dayCloud.y,dayCloud.width,dayCloud.height);
+    nightCtx.drawImage(nightSky,0,0,1070,1000);
+    
+    
     hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height); 
-    //hudCtx.drawImage(image,0,0,264,330);
      if(sprites.length !== 0){
          for(var i = 0; i < sprites.length; i++){
          var sprite = sprites[i];
@@ -149,8 +168,6 @@ function render() {
          sprite.sourceWidth, sprite.sourceHeight,
          sprite.x, sprite.y,
          sprite.width, sprite.height); 
-         //console.log(sprite);
-         //console.log(image);
         }
      }
 }
@@ -177,6 +194,59 @@ function timer(){
   }   
 }
 
+function switchScene(){
+  
+  if(moon.x <= 830){
+    sun.x -= 6;
+    sun.y += 1.2;
+    rotAng += 10;
+    SMCtx.clearRect(0,0,SMCanvas.width,SMCanvas.height);
+    rotateSun(sun.image,sun.x,sun.y,sun.width,sun.height,rotAng);
+    moon.x += 9;
+    moon.y -= 1.5;
+    rotateSun(moon.image,moon.x,moon.y,moon.width,moon.height,rotAng);
+
+    nightCtx.clearRect(0,0,nightCanvas.width,nightCanvas.height);
+    nightCtx.drawImage(nightSky,0,0,1070,1000);
+    
+    if(cloudCanvas.style.opacity <= 1 && nightCanvas.style.opacity <= 1)
+      {
+        dayCanvas.style.opacity -= 0.01;
+        nightCanvas.style.opacity = nightOpcy;
+        if(sun.x <= 400){
+          nightOpcy = nightOpcy + 0.01;
+          cloudCtx.clearRect(0,0,cloudCanvas.width,cloudCanvas.height);
+          cloudCtx.globalAlpha -= 0.02;
+          cloudCtx.drawImage(dayCloud.image,dayCloud.x,dayCloud.y,dayCloud.width,dayCloud.height);
+        
+          nightCloudCtx.clearRect(0,0,cloudCanvas.width,cloudCanvas.height);
+          nightCloudCtx.globalAlpha = nightOpcy;
+          if(nightCloudCtx.globalAlpha > 1)
+            nightCloudCtx.globalAlpha = 1;
+          nightCloudCtx.drawImage(nightCloud.image,nightCloud.x,nightCloud.y,nightCloud.width,nightCloud.height);  
+        }  // console.log(cloudCtx.globalAlpha);
+      }
+  }else{
+      nightCanvas.style.opacity = 1;
+      cloudCtx.globalAlpha = 1;
+      clearInterval(switchIT);
+    }   
+}
+
+function rotateSun(img,x,y,width,height,deg){
+      //Convert degrees to radian 
+      var rad = deg * Math.PI / 180;
+      //Set the origin to the center of the image
+      SMCtx.translate(x + width / 2, y + height / 2);
+      //Rotate the canvas around the origin
+      SMCtx.rotate(rad);
+      //draw the image    
+      SMCtx.drawImage(img,width / 2 * (-1),height / 2 * (-1),width,height);
+      //reset the canvas  
+      SMCtx.rotate(rad * ( -1 ) );
+      SMCtx.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
+}
+
 
 function loadHandler()
 { 
@@ -186,7 +256,10 @@ function loadHandler()
 
 function uiUpdate(){
   window.addEventListener("keydown", onKeyDown);
+  //wrap.addEventListener("mousemove", checkPos);
+  //wrap.addEventListener("click", checkClick);
 }
+
 
 
 //original codes
@@ -263,6 +336,9 @@ function onKeyDown(event)  //HUD cheat codes
               console.log("score width = "+innerScore.width);
               console.log("score sourceWidth = "+innerScore.sourceWidth);
             }
+            break;
+    case 9: //tab
+            switchIT = setInterval(switchScene,60);
             break;
 
     default:

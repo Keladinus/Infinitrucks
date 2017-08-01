@@ -1,0 +1,84 @@
+body 
+{
+	margin:0;
+    padding:0;
+	background-color: #3A86C7;
+	font-family: 'Quantico', sans-serif;
+	font-family: 'Russo One', sans-serif;
+}
+
+#wrap{
+	height:100vh;
+	width:100vh;
+	min-height: 100vh;
+    max-width: 1070;
+	margin: 0 auto;
+	padding: 0;
+	position: relative;
+}
+
+canvas{
+	height:100vh;
+	width:100vh;
+	max-width: 1070;
+	min-height: 100vh;
+	position: absolute;
+}
+
+#start{
+	z-index:6;
+	background-image:url(../Assets/images/bg_startScreens.png);
+	background-size: 100% 100%;
+	display: none;
+}
+
+#frontCloud{
+	z-index: 4;
+}
+
+#frontCloudNight{
+	z-index: 4;
+}
+
+#sunMoon{
+	z-index: 3;
+}
+
+#nightView{
+	z-index: 2;
+	background-image:url(../Assets/images/img_nightView.png);
+	background-size: 100% 100%;
+	opacity: 0;
+}
+
+#dayView{
+	z-index: 2;
+	background-image:url(../Assets/images/img_dayView.png);
+	background-size: 100% 100%;
+	opacity: 1.0;
+}
+
+#uiFrame{
+	z-index:1;
+	background-image:url(../Assets/images/img_uiframe.png);
+	background-size: 100% 100%;
+}
+
+#scoresTxt{
+	z-index: 3;
+}
+
+#hud{
+	z-index:2;
+}
+
+#game
+{
+	z-index:0;
+	background-color: darkgrey;	
+}
+
+#gameOver{
+	z-index:2;
+	background-color: rgba(0, 0, 0,0.8);
+}

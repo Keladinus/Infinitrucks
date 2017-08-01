@@ -1,0 +1,58 @@
+
+#wrap{
+	width:100vh;
+	margin: 0 auto;
+	position: relative;
+}
+
+#start{
+	z-index:2;
+	position: relative;
+	height:100vh;
+	width:100%;
+	background-image:url(../Assets/images/bg_startScreens.png);
+	background-size: 100% 100%;
+}
+
+#uiFrame{
+	z-index:1;
+	position: absolute;
+	height:100vh;
+	width:100%;
+	background-image:url(../Assets/images/frame.png);
+	background-size: 100% 100%;
+/*border: 6px solid #000000;	
+*/
+}
+
+#hud{
+	width:100%;
+}
+
+#game
+{
+	z-index:0;
+	position: absolute;
+	background-color: darkgrey;	
+	height:100vh;
+	width:100%;
+}
+
+#gameOver{
+	z-index:1;
+	position: absolute;
+	height:100vh;
+	width:100%;
+	background-color: rgba(0, 0, 0,0.8);
+}
+
+body 
+{
+	margin: 0;
+	overflow:hidden;
+	/*
+    background-color: #829939;
+	background-image:url(../Assets/images/bg_startScreens.png);
+	*/
+	background-color: #3A86C7;
+}
