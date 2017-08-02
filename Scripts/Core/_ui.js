@@ -370,7 +370,7 @@ function gameOver(){
   loseCtx.drawImage(crashImage, 130, 100);
   loseCtx.drawImage(newImage, endBtX[0], endBtY[0]);
   loseCtx.drawImage(exitImage, endBtX[1], endBtY[1]);
-
+  clearInterval(timeCount);
   if( paused == false ){
       paused = true;
     }	else	

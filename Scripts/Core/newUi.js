@@ -152,13 +152,20 @@ var timeS = {
   width:100,
   height:50
 }
+initialRender();
+function initialRender(){
+  scoreCtx.font = "30px Quantico";
+  scoreCtx.fillStyle = "#b22823";
+  scoreCtx.fillText(timeSec,timeS.x,timeS.y,timeS.width,timeS.height);
+  scoreCtx.fillText(timeMin,timeM.x,timeM.y,timeM.width,timeM.height);
+  scoreCtx.fillText(timeHr,timeH.x,timeH.y,timeH.width,timeH.height);
+}
 
 function render() {
     SMCtx.drawImage(sun.image,sun.x,sun.y,sun.width,sun.height);
     SMCtx.drawImage(moon.image,moon.x,moon.y,moon.width,moon.height);
     cloudCtx.drawImage(dayCloud.image,dayCloud.x,dayCloud.y,dayCloud.width,dayCloud.height);
     nightCtx.drawImage(nightSky,0,0,1070,1000);
-    
     
     hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height); 
      if(sprites.length !== 0){
@@ -256,8 +263,6 @@ function loadHandler()
 
 function uiUpdate(){
   window.addEventListener("keydown", onKeyDown);
-  //wrap.addEventListener("mousemove", checkPos);
-  //wrap.addEventListener("click", checkClick);
 }
 
 
@@ -284,7 +289,6 @@ function onKeyDown(event)  //HUD cheat codes
                 paused = false;
             
             createjs.Ticker.addEventListener("tick", update);
-
             uiFrame.style.display = "block";
             game.style.display ="block";
             startCanvas.style.display = "none";
@@ -346,3 +350,4 @@ function onKeyDown(event)  //HUD cheat codes
 				break;
   }
 }
+

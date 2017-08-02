@@ -91,7 +91,7 @@ function checkPos(mouseEvent){
         var mX = Math.floor(mouseX*(worldWidth/menuWidth));
         var mY = Math.floor(mouseY*(worldWidth/menuWidth));
         // mX, mY : mouse actual position on canvas (if fix at the begin, then no need to fix btX, btY)
-
+        // -> no!! wrong
 
         
 

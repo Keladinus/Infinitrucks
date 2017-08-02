@@ -25,11 +25,14 @@ canvas{
 	position: absolute;
 }
 
+#menuHover{
+	z-index:7;
+}
+
 #start{
 	z-index:6;
 	background-image:url(../Assets/images/bg_startScreens.png);
 	background-size: 100% 100%;
-	display: none;
 }
 
 #frontCloud{
@@ -79,6 +82,7 @@ canvas{
 }
 
 #gameOver{
-	z-index:2;
+	z-index:7;
 	background-color: rgba(0, 0, 0,0.8);
+	display: none;
 }
