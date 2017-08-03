@@ -269,6 +269,7 @@ function onKeyDown(event)
 				break;
 		case 80:		// P key, for pausing.
 				togglePause();
+				
 				break;
 		case 70:		// F key, to freeze trucks in place.  For debug purposes only.
 				if(cheatsEnabled)
@@ -609,7 +610,6 @@ function collisionSweep()
 	  }
 	  else return false;
 
-	  
 }
 
 function collisionLog(hit)
@@ -691,11 +691,12 @@ function clearHurtEffect()
 }
 
 function togglePause()
-{
+{	
 	if(!paused)
 	{
 		paused = true;
 		clearInterval(timeCount);
+		clearInterval(switchIT);
 		clearInterval(healthPickupSpawnInterval);
 		clearInterval(scorePickupSpawnInterval);
 		clearInterval(scoreGainInterval);

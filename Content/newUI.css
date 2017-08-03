@@ -1,10 +1,22 @@
+@font-face {
+	font-family: 'RussoOne';
+    src: url(../Assets/fonts/RussoOne/RussoOneRegular.ttf);
+}
+
+@font-face {
+	font-family: 'Quantico';
+    src: url(../Assets/fonts/Quantico/Quantico-Regular.ttf);
+}
+
+
 body 
 {
 	margin:0;
     padding:0;
 	background-color: #3A86C7;
-	font-family: 'Quantico', sans-serif;
-	font-family: 'Russo One', sans-serif;
+	font-family: 'Quantico';
+	font-family: 'RussoOne';
+	overflow: hidden;
 }
 
 #wrap{
@@ -26,11 +38,11 @@ canvas{
 }
 
 #menuHover{
-	z-index:7;
+	z-index:6;
 }
 
 #start{
-	z-index:6;
+	z-index:5;
 	background-image:url(../Assets/images/bg_startScreens.png);
 	background-size: 100% 100%;
 }
@@ -49,8 +61,10 @@ canvas{
 
 #nightView{
 	z-index: 2;
+	/*
 	background-image:url(../Assets/images/img_nightView.png);
 	background-size: 100% 100%;
+	*/
 	opacity: 0;
 }
 
@@ -75,14 +89,18 @@ canvas{
 	z-index:2;
 }
 
-#game
-{
+#game{
 	z-index:0;
 	background-color: darkgrey;	
 }
 
 #gameOver{
-	z-index:7;
+	z-index:9;
 	background-color: rgba(0, 0, 0,0.8);
+	display: none;
+}
+
+#gameOverMenu{
+	z-index:10;
 	display: none;
 }

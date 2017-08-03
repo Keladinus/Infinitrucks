@@ -19,6 +19,7 @@ var timeSec = 0;
 var timeMin = 0;
 var timeHr = 0;
 var timeCount = 0;
+var switchIT = 0;
 //var timeCount = setInterval(timer, 1000);
 
 var rotAng = 0;
@@ -152,31 +153,17 @@ var timeS = {
   width:100,
   height:50
 }
-initialRender();
-function initialRender(){
-  scoreCtx.font = "30px Quantico";
-  scoreCtx.fillStyle = "#b22823";
-  scoreCtx.fillText(timeSec,timeS.x,timeS.y,timeS.width,timeS.height);
-  scoreCtx.fillText(timeMin,timeM.x,timeM.y,timeM.width,timeM.height);
-  scoreCtx.fillText(timeHr,timeH.x,timeH.y,timeH.width,timeH.height);
+
+function loadHandler()
+{ 
+  render(); 
+  uiUpdate();
+  initialRender();
+  //loadMenu();
 }
 
-function render() {
-    SMCtx.drawImage(sun.image,sun.x,sun.y,sun.width,sun.height);
-    SMCtx.drawImage(moon.image,moon.x,moon.y,moon.width,moon.height);
-    cloudCtx.drawImage(dayCloud.image,dayCloud.x,dayCloud.y,dayCloud.width,dayCloud.height);
-    nightCtx.drawImage(nightSky,0,0,1070,1000);
-    
-    hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height); 
-     if(sprites.length !== 0){
-         for(var i = 0; i < sprites.length; i++){
-         var sprite = sprites[i];
-         hudCtx.drawImage(image, sprite.sourceX, sprite.sourceY, 
-         sprite.sourceWidth, sprite.sourceHeight,
-         sprite.x, sprite.y,
-         sprite.width, sprite.height); 
-        }
-     }
+function uiUpdate(){
+  window.addEventListener("keydown", onKeyDown);
 }
 
 function timer(){
@@ -202,7 +189,6 @@ function timer(){
 }
 
 function switchScene(){
-  
   if(moon.x <= 830){
     sun.x -= 6;
     sun.y += 1.2;
@@ -212,11 +198,8 @@ function switchScene(){
     moon.x += 9;
     moon.y -= 1.5;
     rotateSun(moon.image,moon.x,moon.y,moon.width,moon.height,rotAng);
-
-    nightCtx.clearRect(0,0,nightCanvas.width,nightCanvas.height);
-    nightCtx.drawImage(nightSky,0,0,1070,1000);
     
-    if(cloudCanvas.style.opacity <= 1 && nightCanvas.style.opacity <= 1)
+    if(cloudCanvas.style.opacity < 1)
       {
         dayCanvas.style.opacity -= 0.01;
         nightCanvas.style.opacity = nightOpcy;
@@ -225,21 +208,26 @@ function switchScene(){
           cloudCtx.clearRect(0,0,cloudCanvas.width,cloudCanvas.height);
           cloudCtx.globalAlpha -= 0.02;
           cloudCtx.drawImage(dayCloud.image,dayCloud.x,dayCloud.y,dayCloud.width,dayCloud.height);
-        
           nightCloudCtx.clearRect(0,0,cloudCanvas.width,cloudCanvas.height);
           nightCloudCtx.globalAlpha = nightOpcy;
-          if(nightCloudCtx.globalAlpha > 1)
-            nightCloudCtx.globalAlpha = 1;
+          nightCtx.clearRect(0,0,nightCanvas.width,nightCanvas.height);
+          nightCtx.drawImage(nightSky,0,0,1070,1000);
+          if(nightCloudCtx.globalAlpha >= 1){
+            nightCloudCtx.globalAlpha = 0.8;
+            nightCanvas.style.opacity = 0.8;
+            clearInterval(switchIT);
+          }
           nightCloudCtx.drawImage(nightCloud.image,nightCloud.x,nightCloud.y,nightCloud.width,nightCloud.height);  
-        }  // console.log(cloudCtx.globalAlpha);
+        }
       }
+      console.log(nightCanvas.style.opacity);
   }else{
-      nightCanvas.style.opacity = 1;
-      cloudCtx.globalAlpha = 1;
+      //nightCanvas.style.opacity = 1;
+      cloudCtx.globalAlpha = 0.9;
       clearInterval(switchIT);
     }   
 }
-
+ 
 function rotateSun(img,x,y,width,height,deg){
       //Convert degrees to radian 
       var rad = deg * Math.PI / 180;
@@ -253,18 +241,6 @@ function rotateSun(img,x,y,width,height,deg){
       SMCtx.rotate(rad * ( -1 ) );
       SMCtx.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
 }
-
-
-function loadHandler()
-{ 
-  render(); 
-  uiUpdate();
-}
-
-function uiUpdate(){
-  window.addEventListener("keydown", onKeyDown);
-}
-
 
 
 //original codes
@@ -344,6 +320,9 @@ function onKeyDown(event)  //HUD cheat codes
     case 9: //tab
             switchIT = setInterval(switchScene,60);
             break;
+    case 27: //esc
+            gameOver();
+            break;
 
     default:
 				console.log("cheat code unhandled key.");
@@ -351,3 +330,27 @@ function onKeyDown(event)  //HUD cheat codes
   }
 }
 
+function initialRender(){
+  scoreCtx.font = "30px Quantico";
+  scoreCtx.fillStyle = "#b22823";
+  scoreCtx.fillText(timeSec,timeS.x,timeS.y,timeS.width,timeS.height);
+  scoreCtx.fillText(timeMin,timeM.x,timeM.y,timeM.width,timeM.height);
+  scoreCtx.fillText(timeHr,timeH.x,timeH.y,timeH.width,timeH.height);
+  cloudCtx.drawImage(dayCloud.image,dayCloud.x,dayCloud.y,dayCloud.width,dayCloud.height);
+}
+
+function render() {
+    SMCtx.drawImage(sun.image,sun.x,sun.y,sun.width,sun.height);
+    SMCtx.drawImage(moon.image,moon.x,moon.y,moon.width,moon.height);
+    hudCtx.clearRect(0, 0, hudCanvas.width, hudCanvas.height); 
+
+     if(sprites.length !== 0){
+         for(var i = 0; i < sprites.length; i++){
+         var sprite = sprites[i];
+         hudCtx.drawImage(image, sprite.sourceX, sprite.sourceY, 
+         sprite.sourceWidth, sprite.sourceHeight,
+         sprite.x, sprite.y,
+         sprite.width, sprite.height); 
+        }
+     }
+}
