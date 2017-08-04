@@ -3,12 +3,13 @@
 	<head>
 		<title>Highway Escape</title>
 		<link rel="stylesheet" href="./Content/newUI.css">
-		<!--style
+		<!--style-->
 		<link href="https://fonts.googleapis.com/css?family=Quantico" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet">-->	 	
+		<link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet">	 	
 	</head>
-	<body onload="loadMenu()">
-		<div id = "wrap">
+	<body onload="loadMenu()" onload="init()">
+		<div id = "wrap">	
+			<canvas id="help" width="1070" height="1000"></canvas>
 			<canvas id="gameOverMenu" width="1070" height="1000"></canvas>
 			<canvas id="gameOver" width="1070" height="1000"></canvas>
 			<canvas id="start" width="1070" height="1000"></canvas>
@@ -21,6 +22,9 @@
 			<canvas id = "nightView" width="1070" height="1000"></canvas>
 			<canvas id = "dayView" width="1070" height="1000"></canvas>
 			<canvas id = "uiFrame" width="1070" height="1000"></canvas>
+			<canvas id = "tutorMask" width="1070" height="1000"></canvas>
+			<canvas id = "tutorMsg" width="1070" height="1000"></canvas>
+			<canvas id = "tutoral" width="1070" height="1000"></canvas>
 			<canvas id="game" class="playScreen" width="1070" height="1000"></canvas>
 			
 		</div>
@@ -33,5 +37,7 @@
 		<script src="./Scripts/Core/game.js"></script>
 		<script src="./Scripts/Core/newUi.js"></script>
 		<script src="./Scripts/Core/menu.js"></script>
+		<script src="./Scripts/Core/gameTutor.js"></script> 
+		<script src="./Scripts/Core/sound.js"></script> 
 	</body>
 </html>

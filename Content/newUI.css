@@ -38,29 +38,48 @@ canvas{
 }
 
 #menuHover{
-	z-index:6;
+	z-index:7;
+}
+
+#tutoral{
+	z-index: 0;
+	display: none;
+}
+#tutorMask{
+	z-index: 1;
+	/*background-color: rgba(205, 130, 65, 0.6);*/
+	display: none;
+}
+#tutorMsg{
+	z-index: 2;
 }
 
 #start{
-	z-index:5;
+	z-index:6;
 	background-image:url(../Assets/images/bg_startScreens.png);
 	background-size: 100% 100%;
 }
+#help{
+	z-index:10;
+	background-image:url(../Assets/images/help_Instruction.png);
+	background-size: 100% 100%;
+	display: none;
+}
 
 #frontCloud{
-	z-index: 4;
+	z-index: 5;
 }
 
 #frontCloudNight{
-	z-index: 4;
+	z-index: 5;
 }
 
 #sunMoon{
-	z-index: 3;
+	z-index: 4;
 }
 
 #nightView{
-	z-index: 2;
+	z-index: 3;
 	/*
 	background-image:url(../Assets/images/img_nightView.png);
 	background-size: 100% 100%;
@@ -69,38 +88,39 @@ canvas{
 }
 
 #dayView{
-	z-index: 2;
+	z-index: 3;
 	background-image:url(../Assets/images/img_dayView.png);
 	background-size: 100% 100%;
 	opacity: 1.0;
 }
 
 #uiFrame{
-	z-index:1;
+	z-index:3;
 	background-image:url(../Assets/images/img_uiframe.png);
 	background-size: 100% 100%;
 }
 
 #scoresTxt{
-	z-index: 3;
+	z-index: 4;
 }
 
 #hud{
-	z-index:2;
+	z-index:4;
 }
 
 #game{
 	z-index:0;
-	background-color: darkgrey;	
+	display: none;
+	background-color: darkgrey;
 }
 
 #gameOver{
-	z-index:9;
+	z-index:10;
 	background-color: rgba(0, 0, 0,0.8);
 	display: none;
 }
 
 #gameOverMenu{
-	z-index:10;
+	z-index:11;
 	display: none;
 }

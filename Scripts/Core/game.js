@@ -1,11 +1,12 @@
 var stage = new createjs.Stage("game");
+//var msgStage = new createjs.Stage("tutorMsg");
 var truckSrcs = ["Assets/images/ch_truck01.png","Assets/images/ch_truck02.png","Assets/images/ch_truck03.png","Assets/images/ch_truck04.png",
 				"Assets/images/ch_truck05.png","Assets/images/ch_truck06.png","Assets/images/ch_truck07.png","Assets/images/ch_truck08.png",
 				"Assets/images/ch_truck09.png","Assets/images/ch_truck10.png","Assets/images/ch_truck11.png","Assets/images/ch_truck12.png",
 				"Assets/images/ch_truck13.png","Assets/images/ch_truck14.png","Assets/images/ch_truck15.png"];
 var isRunning = true;
 var background = [];
-var backgroundSpeed = 16;
+var backgroundSpeed = 15;
 var speedMultiplier = 1;
 var turnSpeed = 3;
 var score = 0;
@@ -29,13 +30,12 @@ var maxXspeed = 10;
 var maxYspeed = 14;
 var hurtEffectInterval;
 var hurtEffectCounter = 0;
-var gameBounds = {left:122,right:858,top:152,bottom:660};
+var gameBounds = {left:122,right:858,top:152,bottom:690};
 var loseHealth = new Event("loseHealth");
 var gainHealth = new Event("gainHealth");
 var gainScore = new Event("gainScore");
 var noHP = new Event("noHP");
 var dirX = 0, dirY = 0;
-
 
 start();
 createjs.Ticker.addEventListener("tick", update);
@@ -52,9 +52,9 @@ function start() //Handles getting the game up and running.
 
 function initPlayer()
 {
-	player = {image:new createjs.Bitmap("Assets/images/ch_playerCar.png"), Xspeed:0, Yspeed:0, HP: 10, hurt:false};
+	player = {image:new createjs.Bitmap("Assets/images/ch_playerCar.png"), Xspeed:0, Yspeed:0, HP: 9, hurt:false};
 	player.image.x = 475;
-	player.image.y = 475;
+	player.image.y = 680; //680
 	stage.addChild(player.image);
 }
 
@@ -173,6 +173,8 @@ function trySpawnTrucks()
 				{
 					spawnTruck(lane);
 					spawned = true;
+					trukNum++;
+					//console.log(trukNum);
 				}
 			}
 		}
@@ -184,21 +186,27 @@ function trySpawnHealthPickup()
 {
 	var spawned = false;
 	var chance = Math.random() * 100;
-	if(chance <= 15)
+	if(chance <= 10 && player.HP < 10 && paused === false)
 	{
 		spawnPickup(0);
-		spawned = true;
+		spawned = true;	
+		heartNum++;
+		tutoralShown == true;
 	}
 }
+
 
 function trySpawnScorePickup()
 {
 	var spawned = false;
 	var chance = Math.random() * 100;
-	if(chance <= 15)
+	if(chance <= 10 && paused === false)
 	{
 		spawnPickup(1);
 		spawned = true;
+		lightningNum++;
+		tutoralShown = true;
+		//console.log(lightningNum);
 	}
 }
 
@@ -220,7 +228,7 @@ function spawnPickup(type)
 	}
 	if(tempPickup.bmp != null)
 	{
-		tempPickup.bmp.x=120 + Math.floor(Math.random()*610);
+		tempPickup.bmp.x = 120 + Math.floor(Math.random()*610);
 		tempPickup.bmp.y=-200;
 		pickups.push(tempPickup);
 		stage.addChild(tempPickup.bmp);
@@ -234,12 +242,28 @@ function movePickups()
 		if(pickups[i])
 		{
 			pickups[i].bmp.y += backgroundSpeed;
+			
 			if(pickups[i].bmp.y > 900)
 			{
 				stage.removeChild(pickups[i].bmp);
 					pickups.splice(i,1);
 			}
+
+			if(pickups[i].bmp.y > gameBounds.top && pickups[i].type == 1){
+					pickupY = pickups[i].bmp.y + 25;
+					pickupX = pickups[i].bmp.x + 25;
+					PickLightning();
+					
+			}
+			if(pickups[i].bmp.y > gameBounds.top && pickups[i].type == 0){	
+					pickupY = pickups[i].bmp.y + 25;
+					pickupX = pickups[i].bmp.x + 25;
+					PickHeart();
+
+			}	
+		
 		}
+		
 	}
 }
 
@@ -259,7 +283,7 @@ function onKeyDown(event)
 				break;
 		case 38: // Up.
 		case 87: // W.
-				if ( upPressed == false )
+				if (upPressed == false )
 					upPressed = true;
 				break;
 		case 40: // Down.
@@ -434,8 +458,11 @@ function applyPlayerMovement()
 		player.Xspeed = 0;
 	}
 	var newYpos = player.image.y + player.Yspeed;
-	if(newYpos >= gameBounds.top && newYpos <= gameBounds.bottom)
+
+	if(newYpos >= gameBounds.top && newYpos <= gameBounds.bottom){
 		player.image.y = newYpos;
+	}
+		
 	else if(player.Yspeed < 0)
 	{
 		player.image.y = gameBounds.top;
@@ -454,6 +481,14 @@ function moveTrucks()
 	{
 		for(var pos = 0; pos < trucks[lane].length; pos++)
 		{
+			if(trucks[lane][pos].image.y > gameBounds.top){
+				tutoralShown = true;
+				firstTruckX = trucks[lane][pos].image.x + 50; 
+				firstTruckY = trucks[lane][pos].image.y + 150;
+				//lazy and no time to set the variable, hard code for half of truck img with and heigh
+				showDodgeTruck();
+			}
+
 			if(trucks[lane][pos])
 			{
 				trucks[lane][pos].image.y += trucks[lane][pos].speed;
@@ -461,6 +496,7 @@ function moveTrucks()
 				{
 					stage.removeChild(trucks[lane][pos].image);
 					trucks[lane].splice(pos,1);
+					
 				}
 				else if(trucks[lane][pos].image.y > player.image.y + 100 && trucks[lane][pos].inPlay)
 				{
@@ -483,6 +519,7 @@ function spawnTruck(lane) //spawns a new obstacle in the desired lane.
 	tempTruck.image.y = -200;
 	trucks[lane].push(tempTruck);
 	stage.addChild(tempTruck.image);
+	
 }
 
 function countTrucksInLane(lane) //Simply tallies the number of trucks in a specific designated lane.
@@ -516,7 +553,7 @@ function countTrucksInPlay() //Tallies how many trucks are currently flagged as 
 
 function canSpawnTrucks()	//Simple gatekeeper function to ensure that there aren't too many obstacles for the player to avoid.
 {
-	if(trucksInPlay < 4 && paused === false) // add one more condition to fix the trucks parallel spawning full lanes at the beginning.
+	if(trucksInPlay < 4 && paused == false) // add one more condition to fix the trucks parallel spawning full lanes at the beginning.
 		return true;
 	else
 		return false;
@@ -530,6 +567,7 @@ function laneIsOpen(lane) //Ensures that trucks don't spawn on top of each other
 		return true;
 	
 	return false;
+
 }
 
 function collisionSweep()

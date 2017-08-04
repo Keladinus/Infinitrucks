@@ -72,7 +72,7 @@ var upperCloud = {
 var dayCloud = Object.create(upperCloud);
 dayCloud.image = new Image();
 dayCloud.image.addEventListener("load", loadHandler, false);
-dayCloud.image.src = "Assets/images/img_uppercloud.png";
+dayCloud.image.src = "Assets/images/img_upperCloud.png";
 
 var nightCloud = Object.create(upperCloud);
 nightCloud.image = new Image();
@@ -112,6 +112,8 @@ sprites.push(outerMeter);
 var innerMeter = Object.create(spriteObject);
 innerMeter.sourceY = 84.3;
 innerMeter.y = outerMeter.y;
+innerMeter.width = 240-18;
+innerMeter.sourceWidth = 240-18;
 sprites.push(innerMeter);
 
 //Score outter meter
@@ -159,7 +161,6 @@ function loadHandler()
   render(); 
   uiUpdate();
   initialRender();
-  //loadMenu();
 }
 
 function uiUpdate(){
@@ -323,9 +324,11 @@ function onKeyDown(event)  //HUD cheat codes
     case 27: //esc
             gameOver();
             break;
-
-    default:
-				console.log("cheat code unhandled key.");
+    case 69: //E
+            helpCanvas.style.display = "none";
+            break;
+    //default:
+				//console.log("cheat code unhandled key.");
 				break;
   }
 }

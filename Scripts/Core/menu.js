@@ -1,14 +1,24 @@
 
 var startCanvas = document.getElementById("start");
 var startCtx = startCanvas.getContext("2d");
+startCanvas.width = 1070;
+startCanvas.height = 1000;
+var helpCanvas = document.getElementById("help");
+var helpCtx = helpCanvas.getContext("2d");
+
 var menuCanvas = document.getElementById("menuHover");
 var menuCtx = menuCanvas.getContext("2d");
 var loseCanvas = document.getElementById("gameOver");;
 var loseCtx = loseCanvas.getContext("2d");
 var overCanvas = document.getElementById("gameOverMenu");;
 var overCtx = overCanvas.getContext("2d");
-startCanvas.width = 1070;
-startCanvas.height = 1000;
+var tutorGameCanvas = document.getElementById("tutoral");;
+var tutoralCtx = tutorGameCanvas.getContext("2d");
+var tutorMsgCanvas = document.getElementById("tutorMsg");;
+var msgCtx = tutorMsgCanvas.getContext("2d");
+var tutorMaskCanvas = document.getElementById("tutorMask");
+var MaskCtx = tutorMaskCanvas.getContext("2d");
+
 var stageW = startCanvas.width;
 var stageH = startCanvas.height;
 var mouseX;
@@ -35,10 +45,10 @@ buttons.push(newGame);
 
 var tutoral = Object.create(button);
 tutoral.y = 650;
-tutoral.width = 310;
+tutoral.width = 180;
 //tutoral.x2 = 600 + 310;
 tutoral.y2 = 650 - 54;
-tutoral.points = [{x:600,y:650},{x:600+310,y:650},{x:600+310,y:650-54},{x:600,y:650-54}];
+tutoral.points = [{x:600,y:650},{x:600+180,y:650},{x:600+180,y:650-54},{x:600,y:650-54}];
 buttons.push(tutoral);
 
 var exit = Object.create(button);
@@ -48,7 +58,7 @@ exit.width = 150;
 exit.y2 = 730 - 54;
 exit.points = [{x:600,y:730},{x:600+150,y:730},{x:600+150,y:730-54},{x:600,y:730-54}];
 buttons.push(exit);
-var buttonsText = ["NEW GAME", "TUTORAL", "EXIT"];
+var buttonsText = ["NEW GAME", "HELP", "EXIT"];
 var arrowSign = {
     x:0,
     y:0,
@@ -63,6 +73,7 @@ arrowSign.image.src = "Assets/images/icon_arrowSign.png";
 //loadMenu();
 
 function loadMenu(){
+
     for(var i = 0; i < buttons.length; i++){
         startCtx.font = "65px RussoOne";
         startCtx.fillStyle = "#ffffff";
@@ -86,6 +97,7 @@ function definePath(p){
         menuCtx.lineTo(p[i].x,p[i].y);
     }
     menuCtx.closePath();
+    //menuCtx.stroke();
     //console.log(p);
 }
 
@@ -134,6 +146,7 @@ function checkClick(mouseEvent){
                     switch(i)
                     {
                         case 0:
+                           var isTutor = false;
                             if( paused == true ){
                                 paused = false;
                             }	else	
@@ -142,13 +155,13 @@ function checkClick(mouseEvent){
                             timeCount = setInterval(timer, 1000);
                             createjs.Ticker.addEventListener("tick", update);
                             uiFrame.style.display = "block";
-                            game.style.display ="block";
+                            game.style.display = "block";
                             startCanvas.style.display = "none";
                             menuCanvas.style.display = "none";
-                            //loseCanvas.style.display = "none";
+                            
                         break;
                         case 1:
-                            
+                            helpCanvas.style.display = "block";
                         break;
                         case 2:
                             self.close();
@@ -305,7 +318,6 @@ function moveYellowAr(mouseEvent){
                 overCtx.drawImage(yellowArrow.image, endBtns[i].x - yellowArrow.width - 10, endBtns[i].y - yellowArrow.height);
                 setCursor = "pointer";
                 isHover = true;
-
                 //console.log("isPointInPath");
                 break;
             }
